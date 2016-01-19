@@ -57,11 +57,14 @@ module Net
 
           case thread.value.exitstatus
             when 0
+              end_time = Time.now
               info = stdout.read
               if info =~ /unreachable/ix # Windows
                 bool = false
                 @exception = "host unreachable"
               else
+                @duration = end_time - start_time
+
                 bool = true  # Success, at least one response.
               end
 
@@ -88,9 +91,6 @@ module Net
       rescue Exception => error
         @exception = error.message
       end
-
-      # There is no duration if the ping failed
-      @duration = Time.now - start_time if bool
 
       bool
     end
